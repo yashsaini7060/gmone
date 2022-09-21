@@ -1,6 +1,3 @@
-import copy
-
-
 dir_List = []
 nodes_List = []
 current_node=0
@@ -58,11 +55,17 @@ class TreeNode:
       #print(substring)
       global current_node
       global root_node
+      global dir_List
       for item in substring:
         if(item!=""):
-          new_node=TreeNode("/"+item)
-          current_node.add_child(new_node)
-          current_node=new_node
+          if name in dir_List:
+            #cd
+            pass
+          else:
+            name="/"+item
+            new_node=TreeNode(name)
+            current_node.add_child(new_node)
+            current_node=new_node
       current_node=self
 
 def parent_dir(value):
@@ -81,6 +84,7 @@ def parent_dir(value):
 
 def main():
 
+  #impoting global variables
   global working_dir 
   global term 
   global doll
@@ -89,13 +93,16 @@ def main():
   global nodes_List
   global current_node
   global cd_count
-  # working_dir="/"
-  # term="root:/"
-  # doll="$"
+
+
+  #initializing tree
   root = TreeNode("root/")
   current_node=root
   root_node=root
   a = True
+
+
+  #while loop to be in gmone
   while(a):
     print(term+working_dir+doll, end=" ")
     query= input() 
@@ -155,7 +162,6 @@ def main():
 
           elif directory_name in dir_List:
             index_num = dir_List.index(directory_name)
-            # print(index_num)
             if cd_count==0:
                working_dir = working_dir + directory_name[1:]
                cd_count=cd_count+1
