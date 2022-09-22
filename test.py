@@ -1,3 +1,6 @@
+from re import sub
+
+
 dir_List = []
 nodes_List = []
 current_node=0
@@ -31,8 +34,8 @@ class TreeNode:
         prefix = spaces + "|__" if self.parent else ""
         print(prefix + self.data)
         if self.children:
-            for child in self.children:
-                child.print_tree()
+          for child in self.children:
+            child.print_tree()
 
     def dir_list(self):
       dir_List.append(self.data)
@@ -74,12 +77,64 @@ def parent_dir(value):
   #print(substring)
   global current_node
   global root_node
-  # for item in substring:
-  #       if(item!=""):
-  #         new_node=TreeNode("/"+item)
-  #         current_node.add_child(new_node)
-  #         current_node=new_node
-  # current_node=self
+
+
+def mkdir_str(value):
+  global current_node
+  global root_node
+  global dir_List
+  substring = value.split('/')
+  print(substring)
+  temp_node=current_node
+  del nodes_List[:]
+  del dir_List[:]
+  print()
+  current_node.nodes_list()
+  current_node.dir_list()
+  #"dirlist-->" +
+  dir_List.pop(0)
+  print(dir_List)
+  #"nodeslist-->" +
+  print(nodes_List)
+  length=len(substring)-1
+  print(length)
+  for item in range(0,len(substring)):
+    if(substring[item]!=""):
+      # pass
+      print(item)
+      directory_name="/"+substring[item]
+      print(directory_name)
+      if item==length:
+          #makee dir
+        print("last elementt")
+        print(item)
+        current_node.add_node(directory_name)
+        print("Node added")
+          # pass
+      else:
+        if directory_name in dir_List:
+          print("elements")
+          print(item)
+          print(directory_name)
+          index_num = dir_List.index(directory_name)
+          print(index_num)
+          print("dir_List")
+          print(dir_List)
+          print("nodes_List")
+          print(nodes_List)
+          print("before curr")
+          print(current_node)
+          current_node=nodes_List[index_num]
+          print("after curr")
+          print(current_node)
+          del nodes_List[:]
+          del dir_List[:]
+          current_node.nodes_list()
+          current_node.dir_list()
+          dir_List.pop(0)
+        else:
+          print("mkdir: Ancestor directory does not exist")
+  current_node=temp_node
 
 
 def main():
@@ -112,7 +167,9 @@ def main():
 
       if(a[0]== "exit"):
         a=False
+        root.print_tree()
         print("bye, root")
+        
 
       elif(a[0] == "pwd"):
         print(working_dir)
@@ -134,8 +191,8 @@ def main():
           elif dir_name=="/":
             term="root:"
             working_dir="/"
-            current_node=root_node
             cd_count=0
+            current_node=root_node
             del dir_List[:]
             
 
@@ -192,6 +249,7 @@ def main():
                 if len(name) and name[len(name)-1] == "/":
                   f_name = "/" + name[:-1]
                   current_node.dir_list()
+                  
                   if f_name in dir_List:
                     pass
                   else:
@@ -214,7 +272,15 @@ def main():
             else:
               current_node.dir_list()
               dir_List.pop(0)
-              if len(name) and name[len(name)-1] == "/":
+              count=0
+              for i in range(0, len(name)):  
+                   if(name[i] == '/'):  
+                    count = count + 1
+              if count > 1:
+                print("in if")
+                mkdir_str(name)
+
+              elif len(name) and name[len(name)-1] == "/":
                 f_name = "/" + name[:-1]
                 if f_name in dir_List:
                   print("mkdir: File exists")
@@ -241,7 +307,7 @@ def main():
       
     else:
       print(term) 
-  root.print_tree()
+  
     
 
   
