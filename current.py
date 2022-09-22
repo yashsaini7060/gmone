@@ -295,25 +295,31 @@ def main():
       elif(a[0]=="touch"):
         try:
           name = str(a[1]).strip()
+          
           del dir_List[:]
           current_node.dir_list()
+          count=0
           for i in range(0, len(name)):  
             if(name[i] == '/'):  
               count = count + 1
+        
           if count > 1:
             path_check_str(name,"mkdir")
-
+          # current_node.add_node(name)
           elif name in dir_List:
             print("touch: File exists")
           else:
+            # print("in else")
+            # node = TreeNode(name)
+            # current_node.add_child(node)
             current_node.add_node(name)
         except:
           pass
-        
       
     else:
       print(term) 
-  
+
+  root.print_tree()
     
 
   
