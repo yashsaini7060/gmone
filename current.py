@@ -108,7 +108,8 @@ def path_check_str(value,  filename):
           #makee dir
         #print("last elementt")
         #print(item)
-        current_node.add_node(directory_name)
+        # 
+        pass
         #print("Node added")
           # pass
       else:
@@ -302,9 +303,10 @@ def main():
           for i in range(0, len(name)):  
             if(name[i] == '/'):  
               count = count + 1
+              name=name[1:]
         
           if count > 1:
-            path_check_str(name,"mkdir")
+            path_check_str(name,"touch")
           # current_node.add_node(name)
           elif name in dir_List:
             print("touch: File exists")
@@ -319,6 +321,8 @@ def main():
     else:
       print(term) 
 
+  current_node.dir_list()
+  print(dir_List)
   root.print_tree()
     
 
