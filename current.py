@@ -302,8 +302,22 @@ def main():
             pass
 
       elif(a[0]=="touch"):
-        name = str(a[1]).strip()
-        current_node.add_node(name)
+        try:
+          name = str(a[1]).strip()
+          current_node.dir_list()
+          for i in range(0, len(name)):  
+            if(name[i] == '/'):  
+              count = count + 1
+          if count > 1:
+            path_check_str(name,"mkdir")
+
+          elif name in dir_List:
+            print("touch: File exists")
+          else:
+            current_node.add_node(name)
+        except:
+          pass
+        
       
     else:
       print(term) 
