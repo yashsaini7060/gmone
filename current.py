@@ -1,3 +1,6 @@
+
+
+
 dir_List = []
 nodes_List = []
 current_node=0
@@ -76,7 +79,7 @@ def parent_dir(value):
   global root_node
 
 
-def path_str_check(value, filetype):
+def path_check_str(value,  filename):
   global current_node
   global root_node
   global dir_List
@@ -99,10 +102,7 @@ def path_str_check(value, filetype):
     if(substring[item]!=""):
       # pass
       #print(item)
-      if(filetype=="mkdir"):
-        directory_name="/"+substring[item]
-      else:
-        directory_name=substring[item]
+      directory_name="/"+substring[item]
       #print(directory_name)
       if item==length:
           #makee dir
@@ -133,7 +133,7 @@ def path_str_check(value, filetype):
           current_node.dir_list()
           dir_List.pop(0)
         else:
-          print(filetype + ": Ancestor directory does not exist")
+          print(filename+": Ancestor directory does not exist")
           break
   current_node=temp_node
 
@@ -279,7 +279,7 @@ def main():
                     count = count + 1
               if count > 1:
                 #print("in if")
-                path_str_check(name, "mkdir")
+                path_check_str(name,"mkdir")
 
               elif len(name) and name[len(name)-1] == "/":
                 f_name = "/" + name[:-1]
@@ -303,24 +303,7 @@ def main():
 
       elif(a[0]=="touch"):
         name = str(a[1]).strip()
-        del dir_List[:]
-        current_node.dir_list()
-        if name[0]=="/":
-          name=name[1:]
-        count=0
-        for i in range(0, len(name)):
-          if(name[i] == '/'):  
-              count = count + 1
-        if count > 1:
-          #print("in if")
-          path_str_check(name, "touch")
-        if name in dir_List:
-          print("mkdir: File exists")
-          if f_name in dir_List:
-            print("mkdir: File exists")
-          else:
-            current_node.add_node(name)
-        del dir_List[:] 
+        current_node.add_node(name)
       
     else:
       print(term) 
