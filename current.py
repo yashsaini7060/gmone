@@ -176,6 +176,7 @@ def main():
         print(working_dir)
 
       elif(a[0] == "cd"):
+        del dir_List[:]
         current_node.dir_list()
         current_node.nodes_list()
         dir_List.pop(0)
@@ -187,22 +188,20 @@ def main():
           dir_name = str(input_val).strip()
           directory_name = "/" + dir_name 
           if dir_name==".":
-            del dir_List[:]
+            pass
 
           elif dir_name=="/":
             term="root:"
             working_dir="/"
             cd_count=0
             current_node=root_node
-            del dir_List[:]
             
 
           elif dir_name=="..":
             parent_dir(working_dir)
-            del dir_List[:]
 
           elif "./" in dir_name:
-            del dir_List[:]
+            pass
           
           elif len(dir_name) >=1 and dir_name[0]=="/":
             if dir_name in dir_List:
@@ -214,7 +213,6 @@ def main():
               else:
                 working_dir = working_dir + dir_name[1:]
                 current_node=nodes_List[index_num]
-            del dir_List[:]
 
             
 
@@ -228,15 +226,12 @@ def main():
                working_dir = working_dir + directory_name
                cd_count=cd_count+1
                current_node=nodes_List[index_num]
-            del dir_List[:]
 
           elif dir_name in dir_List:
             print("cd: Destination is a file")
-            del dir_List[:]
 
           else:
             print("cd: No such file or directory")
-            del dir_List[:]
 
         except:
           print("cd: Invalid syntax") 
@@ -249,13 +244,12 @@ def main():
                 name = str(a[2]).strip()
                 if len(name) and name[len(name)-1] == "/":
                   f_name = "/" + name[:-1]
+                  del dir_List[:]
                   current_node.dir_list()
-                  
                   if f_name in dir_List:
                     pass
                   else:
                     current_node.add_node(f_name)
-                  del dir_List[:]
                 else:
                   f_name = "/" + name
                   current_node.dir_list()
@@ -265,7 +259,6 @@ def main():
                     pass
                   else:
                     current_node.add_node(f_name)
-                del dir_List[:] 
                 pass
               except:
                 pass
@@ -287,7 +280,6 @@ def main():
                   print("mkdir: File exists")
                 else:
                   current_node.add_node(f_name)
-                del dir_List[:]
               else:
                 f_name = "/" + name
               # print("yash2")
@@ -297,13 +289,13 @@ def main():
                   print("mkdir: File exists")
                 else:
                   current_node.add_node(f_name)
-                del dir_List[:] 
           except:
             pass
 
       elif(a[0]=="touch"):
         try:
           name = str(a[1]).strip()
+          del dir_List[:]
           current_node.dir_list()
           for i in range(0, len(name)):  
             if(name[i] == '/'):  
