@@ -1,6 +1,3 @@
-
-
-
 dir_List = []
 nodes_List = []
 current_node=0
@@ -83,6 +80,9 @@ def path_check_str(value,  filename):
   global current_node
   global root_node
   global dir_List
+
+  if value[0]=="/":
+    name=name[1:]
   substring = value.split('/')
   #print(substring)
   temp_node=current_node
@@ -102,7 +102,10 @@ def path_check_str(value,  filename):
     if(substring[item]!=""):
       # pass
       #print(item)
-      directory_name="/"+substring[item]
+      # if filename =="mkdir":
+      #   directory_name="/"+substring[item]
+      # else:
+      #   directory_name=substring[item]
       #print(directory_name)
       if item==length:
           #makee dir
@@ -113,6 +116,7 @@ def path_check_str(value,  filename):
         #print("Node added")
           # pass
       else:
+        directory_name="/"+substring[item]
         if directory_name in dir_List:
           #print("elements")
           #print(item)
@@ -178,6 +182,7 @@ def main():
 
       elif(a[0] == "cd"):
         del dir_List[:]
+        del nodes_List[:]
         current_node.dir_list()
         current_node.nodes_list()
         dir_List.pop(0)
@@ -303,9 +308,10 @@ def main():
           for i in range(0, len(name)):  
             if(name[i] == '/'):  
               count = count + 1
-              name=name[1:]
+              
         
           if count > 1:
+            
             path_check_str(name,"touch")
           # current_node.add_node(name)
           elif name in dir_List:
