@@ -1,4 +1,4 @@
-from operator import sub
+
 
 
 dir_List = []
@@ -83,11 +83,10 @@ def path_check_str(value,  filename):
   global current_node
   global root_node
   global dir_List
-
-  # if value[0]=="/":
-  #   name=name[1:] 
+  if value[0]=="/":
+    name=name[1:] 
   substring = value.split('/')
-  print(substring)
+  #print(substring)
   
   temp_node=current_node
   del nodes_List[:]
@@ -106,22 +105,32 @@ def path_check_str(value,  filename):
     if(substring[item]!=""):
       # pass
       #print(item)
-      
+      directory_name="/"+substring[item]
       #print(directory_name)
       if item==length:
-        # if filename=="mkdir":
-        #   directory_name="/" + substring[item]
-        #   current_node.add_node(directory_name)
-        # else:
-        #   current_node.add_node(substring[item])
+          #makee dir
+        #print("last elementt")
+        #print(item)
+        # 
         pass
-
+        #print("Node added")
+          # pass
       else:
-        print(substring[item])
-        directory_name="/"+substring[item]
         if directory_name in dir_List:
+          #print("elements")
+          #print(item)
+          #print(directory_name)
           index_num = dir_List.index(directory_name)
-          current_node=nodes_List[index_num]
+          #print(index_num)
+          #print("dir_List")
+          #print(dir_List)
+          #print("nodes_List")
+          #print(nodes_List)
+          #print("before curr")
+          #rint(current_node)
+          #current_node=nodes_List[index_num]
+          #print("after curr")
+          #print(current_node)
           del nodes_List[:]
           del dir_List[:]
           current_node.nodes_list()
@@ -130,43 +139,7 @@ def path_check_str(value,  filename):
         else:
           print(filename+": Ancestor directory does not exist")
           break
-  # current_node=temp_node
-
-def cp(src_adr,des_adr):
-  src_list=src_adr.split("/")
-  des_list=des_adr.split("/")
-  
-  for item in src_list:
-    f_name="/"+item
-    del dir_List[:]
-    del nodes_List[:]
-    current_node.nodes_list()
-    current_node.dir_list()
-    # dir_List.pop(0)
-    # print(dir_List)
-    # print(nodes_List)
-    if f_name in dir_List:
-      pass
-    else:
-      print("cp: No such file")
-
-  for item in des_list:
-    f_name="/"+item
-    del dir_List[:]
-    del nodes_List[:]
-    current_node.nodes_list()
-    current_node.dir_list()
-    dir_List.pop(0)
-    print(dir_List)
-    print(nodes_List)
-    if f_name in dir_List:
-      print("cp: Destination is a directory")
-      pass
-    else:
-      print("cp: No such file")
-  pass
-
-
+  current_node=temp_node
 
 
 def main():
@@ -187,7 +160,7 @@ def main():
   current_node=root
   root_node=root
   a = True
-  print(root)
+
 
   #while loop to be in gmone
   while(a):
@@ -199,7 +172,7 @@ def main():
 
       if(a[0]== "exit"):
         a=False
-        root.print_tree()
+        #root.print_tree()
         print("bye, root")
         
 
@@ -208,11 +181,10 @@ def main():
 
       elif(a[0] == "cd"):
         del dir_List[:]
-        del nodes_List[:]
         current_node.dir_list()
         current_node.nodes_list()
         dir_List.pop(0)
-        print(current_node)
+        # print(dir_List)
         # print("Nodes List")
         # print(nodes_List)
         try:
@@ -349,23 +321,6 @@ def main():
         except:
           pass
       
-
-      
-      #TASK 2 BENGINS
-
-      elif(a[0]=="cp"):
-        try:
-          src_adr = str(a[1]).strip()
-          des_adr = str(a[2]).strip()
-          cp(src_adr,des_adr)
-          pass
-        except:
-          pass
-        pass
-
-
-
-
     else:
       print(term) 
 
