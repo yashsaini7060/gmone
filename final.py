@@ -1,6 +1,10 @@
 
 
-from final_code_func import initial_dir
+
+from importlib.resources import path
+from re import sub
+from sys import flags
+from tkinter import W
 
 
 dir_List = []
@@ -64,16 +68,6 @@ class TreeNode:
       print(self.data)
 
 
-# def initialize_value():
-#   del dir_List[:]
-#   del nodes_List[:]
-#   current_node.dir_list()
-#   current_node.nodes_list()
-#   dir_List.pop(0)
-
-
-
-
 
 
 #FUNCTION TO ADD NODE
@@ -82,20 +76,17 @@ def add_node(type, name):
   if type=="mkdir":
     name="/"+name
     new_node= TreeNode(name)
-    print(current_node)
+    # print(current_node)
     current_node.add_child(new_node)
   elif type=="touch":
     new_node= TreeNode(name)
-    print(current_node)
+    # print(current_node)
     current_node.add_child(new_node)
 
-def func_mkdir(sub_query):
-  # print(sub_query)
-  # print(working_dir)
-  add_node("mkdir",sub_query)
 
 
-def func_cd(dir_name):
+
+def func_cd(dir_name,flag="cd: No such file or directory"):
 
   global child_List
   global nodes_List
@@ -107,21 +98,17 @@ def func_cd(dir_name):
   global term 
   global doll
 
-  # initial_dir()
   del dir_List[:]
   current_node.dir_list()
   current_node.nodes_list()
   dir_List.pop(0)
 
-  # initial_dir()
-  # print(dir_List)
-  # print(nodes_List)
-  # current_node.node_data()
-  # print(current_node)
-  # for item in nodes_List:
-  #   item.node_data()
-    # print(item)
-    
+
+  if len(dir_name)>=2 and dir_name[0]=="/":
+    dir_name=dir_name[1:]    
+
+
+  # print(dir_name)
 
 
   directory = "/" + dir_name
@@ -154,7 +141,7 @@ def func_cd(dir_name):
     print("To many paths")
 
   elif directory in dir_List:
-    print("got it")
+    # print("got it")
     index_num = dir_List.index(directory)
     if cd_count==0:
       working_dir = working_dir + directory[1:]
@@ -166,11 +153,103 @@ def func_cd(dir_name):
     # print("found")
   
   else:
-    print("cd: No such file or directory")
+    print(flag)
+
+def mkdir_p(path_list):
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+  temp_node = current_node
+
+  if len(path_list)==1:
+    name="/"+path_list[0]
+    if name in dir_List:
+      print("w")
+      pass
+    else:
+      add_node("mkdir",name)
+  # i=0
+  # print(path_list)
+  # while i < len(path_list):
+  #   print(path_list[i])
 
 
 
+def func_mkdir(sub_query, flag="false"):
 
+  #flag =false if -p is not their
+  #flag =true if -p is their
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+
+  temp_node=current_node
+  temp_working=working_dir
+
+  
+
+  path_list=sub_query.split('/')
+  
+  while("" in path_list):
+    path_list.remove("")
+  
+  if flag=="false":
+    dir_name = "/" + sub_query
+
+  elif len(path_list)==1:
+    flag=="false"
+    dir_name = "/" + path_list[0]
+    sub_query=path_list[0]
+
+  if len(path_list)==1 and flag=="false":
+    if dir_name in dir_List:
+      print("mkdir: File exists")
+    elif sub_query in dir_List:
+      print("mkdir: File exists")
+    else:
+      add_node("mkdir",sub_query)
+
+  # print(len(path_list))
+  # print(flag)
+
+  if len(path_list)>1 and flag=="false":
+    # print("reching here")
+    # pass
+    for item in range(0, len(path_list)):
+      if item==(len(path_list)-1):
+        func_mkdir(path_list[item],"false")
+      else:
+        func_cd(path_list[item], "mkdir: Ancestor directory does not exist")
+        if(temp_node==current_node):
+          break
+  current_node=temp_node
+  working_dir=temp_working
+  
+  # if flag=="true":
+  #   mkdir_p(path_list)
+  #   pass
 
 
 def func_touch(sub_query):
@@ -232,15 +311,24 @@ def main():
       elif(a[0]=="mkdir"):
         try:
           sub_query=str(a[1]).strip()
-          print(sub_query)
-          func_mkdir(sub_query)
+          if sub_query=="-p":
+            try: 
+              sub_query=str(a[2]).strip()
+              func_mkdir(sub_query,"true")
+            except:
+              pass
+          else:
+            func_mkdir(sub_query,"false")
         except:
           print("mkdir: Invalid syntax") 
 
       elif(a[0]=="touch"):
         try:
           file_name = str(a[1]).strip()
-          func_touch(file_name)
+          if file_name=="":
+            pass
+          else:
+            func_touch(file_name)
         except:
           pass
 
