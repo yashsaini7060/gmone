@@ -11,6 +11,7 @@ working_dir="/"
 term="root:"
 doll="$"
 anc_dir=1
+des_file=1
 
 
 
@@ -96,6 +97,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   global term 
   global doll
   global anc_dir
+  global des_file
   temp_node=current_node
   temp_working=working_dir
   temp_cd_count=cd_count
@@ -140,6 +142,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     
   elif (dir_name in dir_List) and extr=="false":
     print("cd: Destination is a file")
+    des_file=0
 
 
   elif len(path_list)>1:
@@ -163,6 +166,15 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   else:
     print(str)
     anc_dir=0
+
+  if(des_file==0):
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count
+
+
+
+
 
 def mkdir_p(path_list):
   global child_List
