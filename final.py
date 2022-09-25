@@ -1,14 +1,6 @@
 
 
 
-from importlib.resources import path
-from msilib.schema import Directory
-from os import mkdir
-from re import sub
-from sys import flags
-from tkinter import W
-
-
 dir_List = []
 child_List = []
 nodes_List = []
@@ -18,6 +10,7 @@ cd_count=0
 working_dir="/"
 term="root:"
 doll="$"
+anc_dir=1
 
 
 
@@ -88,8 +81,8 @@ def add_node(type, name):
 
 
 
-def func_cd(dir_name,flag="cd: No such file or directory"):
-
+def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
+  # print(extr)
   global child_List
   global nodes_List
   global dir_List
@@ -99,11 +92,13 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
   global working_dir 
   global term 
   global doll
+  global anc_dir
 
   del dir_List[:]
   current_node.dir_list()
   current_node.nodes_list()
   dir_List.pop(0)
+  print(dir_List)
 
   if len(dir_name)>=2 and dir_name[0]=="/":
     dir_name=dir_name[1:]    
@@ -119,7 +114,7 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
   while("" in path_list):
     path_list.remove("")
 
-  print(cd_count)
+  
 
   if dir_name==".":
     pass
@@ -137,7 +132,7 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
     cd_count=0
     current_node=root_node  
     
-  elif dir_name in dir_List:
+  elif (dir_name in dir_List) and extr=="false":
     print("cd: Destination is a file")
 
 
@@ -158,7 +153,8 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
 
   
   else:
-    print(flag)
+    print(str)
+    anc_dir=0
 
 def mkdir_p(path_list):
   global child_List
@@ -236,6 +232,7 @@ def func_mkdir(sub_query, flag="false"):
 
   temp_node=current_node
   temp_working=working_dir
+  temp_cd_count=cd_count
 
   path_list=sub_query.split('/')
   
@@ -268,6 +265,7 @@ def func_mkdir(sub_query, flag="false"):
           break
   current_node=temp_node
   working_dir=temp_working
+  cd_count=temp_cd_count
   
   if flag=="true":
     mkdir_p(path_list)
@@ -275,7 +273,58 @@ def func_mkdir(sub_query, flag="false"):
 
 
 def func_touch(sub_query):
-  add_node("touch",sub_query)
+
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+  global anc_dir
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+
+  temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+  path_list=sub_query.split('/')
+  
+  while("" in path_list):
+    path_list.remove("")
+
+  
+  if len(path_list)==1:
+    item=path_list[0]
+    if item in dir_List:
+      pass
+    else:
+      add_node("touch",item)
+  elif len(path_list)>1:
+    for item in range(0,len(path_list)):
+      if item==(len(path_list)-1):
+        if path_list[item] in dir_List:
+          pass
+        else:
+          func_touch(path_list[item])
+      else:
+        name="/"+path_list[item]
+        # print(dir_List)
+        func_cd(name, "touch: Ancestor directory does not exist","true")
+      
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count
+      
 
 
 
