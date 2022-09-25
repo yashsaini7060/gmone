@@ -82,6 +82,9 @@ def add_node(type, name):
 
 
 def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
+  # print(dir_name)
+  # extr=false means no other function is not calling it
+  # if true other function calls it
   # print(extr)
   global child_List
   global nodes_List
@@ -93,18 +96,21 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   global term 
   global doll
   global anc_dir
+  temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
 
   del dir_List[:]
   current_node.dir_list()
   current_node.nodes_list()
   dir_List.pop(0)
-  print(dir_List)
 
+  print(dir_name)
   if len(dir_name)>=2 and dir_name[0]=="/":
     dir_name=dir_name[1:]    
 
 
-  # print(dir_name)
+  print(dir_name)
 
 
   directory = "/" + dir_name
@@ -139,9 +145,11 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   elif len(path_list)>1:
     for item in path_list:
       func_cd(item)
-      
+
+  
 
   elif directory in dir_List:
+    print("here"+directory)
     index_num = dir_List.index(directory)
     if cd_count==0:
       working_dir = working_dir + directory[1:]
@@ -190,7 +198,7 @@ def mkdir_p(path_list):
       directory="/"+path_list[item]
 
       if item==(len(path_list)-1):
-        print(directory)
+        # print(directory)
         if directory in dir_List:
           func_cd(directory[1:])
         else:
@@ -269,7 +277,7 @@ def func_mkdir(sub_query, flag="false"):
   
   if flag=="true":
     mkdir_p(path_list)
-    # pass
+
 
 
 def func_touch(sub_query):
@@ -324,8 +332,73 @@ def func_touch(sub_query):
   current_node=temp_node
   working_dir=temp_working
   cd_count=temp_cd_count
-      
 
+
+def chk_exists():
+  pass
+
+
+def fun_cp(file_path, dest_path):
+  
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+  global anc_dir
+
+  temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+  file_path=file_path.split('/')
+  # dest_path=dest_path.split('/')
+
+  while("" in file_path):
+    file_path.remove("")
+
+  # while("" in dest_path):
+  #   dest_path.remove("")
+  
+  # print(file_path)
+  # print(dest_path)
+  file_path_exists="false"
+
+  if len(file_path)>1:
+    for item in range(0,len(file_path)):
+      if item==(len(file_path)-1):
+        for_dir="/"+file_path[item]
+        if file_path[item] in dir_List:
+          file_path_exists="true"
+        elif for_dir in dir_List:
+          print("cp: Source is a directory")
+        else:
+          print("cp: No such file")
+      else:
+        func_cd(file_path[item],"cp: No such file or directory")
+
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count  
+
+  print(file_path_exists)
+  if file_path_exists=="true" :
+    func_touch(dest_path)  
+  
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count 
+
+
+  
 
 
 
@@ -366,7 +439,13 @@ def main():
         print("bye, root")
 
       elif(a[0] == "pwd"):
-        print(working_dir)
+        try:
+          sub_query = str(a[1]).strip()
+          # print(sub_query)
+          print("pwd: Invalid syntax")
+        except:
+          print(working_dir)
+        
       
       #SAFE CODE ENDS
 
@@ -403,6 +482,14 @@ def main():
         except:
           pass
 
+      elif(a[0]=="cp"):
+        try:
+          file_path=str(a[1]).strip()
+          dest_path=str(a[2]).strip()
+          fun_cp(file_path, dest_path)
+        except:
+          pass
+
 
       elif(a[0]=="tree"):
           root_node.print_tree()
@@ -410,7 +497,6 @@ def main():
       else:
         print(a[0]+": Command not found")
   pass
-
 
 
 
