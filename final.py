@@ -2,6 +2,8 @@
 
 
 from importlib.resources import path
+from msilib.schema import Directory
+from os import mkdir
 from re import sub
 from sys import flags
 from tkinter import W
@@ -103,7 +105,6 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
   current_node.nodes_list()
   dir_List.pop(0)
 
-
   if len(dir_name)>=2 and dir_name[0]=="/":
     dir_name=dir_name[1:]    
 
@@ -117,6 +118,8 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
 
   while("" in path_list):
     path_list.remove("")
+
+  print(cd_count)
 
   if dir_name==".":
     pass
@@ -137,11 +140,13 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
   elif dir_name in dir_List:
     print("cd: Destination is a file")
 
+
   elif len(path_list)>1:
-    print("To many paths")
+    for item in path_list:
+      func_cd(item)
+      
 
   elif directory in dir_List:
-    # print("got it")
     index_num = dir_List.index(directory)
     if cd_count==0:
       working_dir = working_dir + directory[1:]
@@ -150,7 +155,7 @@ def func_cd(dir_name,flag="cd: No such file or directory"):
     else:
       working_dir = working_dir + directory
       current_node=nodes_List[index_num]
-    # print("found")
+
   
   else:
     print(flag)
@@ -166,23 +171,47 @@ def mkdir_p(path_list):
   global term 
   global doll
 
-  del dir_List[:]
-  current_node.dir_list()
-  current_node.nodes_list()
-  dir_List.pop(0)
-  temp_node = current_node
 
+  temp_node = current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
   if len(path_list)==1:
     name="/"+path_list[0]
     if name in dir_List:
-      print("w")
       pass
     else:
-      add_node("mkdir",name)
-  # i=0
-  # print(path_list)
-  # while i < len(path_list):
-  #   print(path_list[i])
+      add_node("mkdir",path_list[0])
+
+  if len(path_list)>1:
+    for item in range(0, len(path_list)):
+
+      del dir_List[:]
+      current_node.dir_list()
+      current_node.nodes_list()
+      dir_List.pop(0)
+
+      name=path_list[item]
+      directory="/"+path_list[item]
+
+      if item==(len(path_list)-1):
+        print(directory)
+        if directory in dir_List:
+          func_cd(directory[1:])
+        else:
+          func_mkdir(directory[1:],"false")
+      
+      else:
+
+        if directory in dir_List:
+          func_cd(directory[1:])
+        else:
+          func_mkdir(directory[1:],"false")
+          func_cd(directory[1:])
+        
+
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count
 
 
 
@@ -208,8 +237,6 @@ def func_mkdir(sub_query, flag="false"):
   temp_node=current_node
   temp_working=working_dir
 
-  
-
   path_list=sub_query.split('/')
   
   while("" in path_list):
@@ -218,8 +245,7 @@ def func_mkdir(sub_query, flag="false"):
   if flag=="false":
     dir_name = "/" + sub_query
 
-  elif len(path_list)==1:
-    flag=="false"
+  elif len(path_list)==1 and flag=="false":
     dir_name = "/" + path_list[0]
     sub_query=path_list[0]
 
@@ -231,12 +257,8 @@ def func_mkdir(sub_query, flag="false"):
     else:
       add_node("mkdir",sub_query)
 
-  # print(len(path_list))
-  # print(flag)
 
   if len(path_list)>1 and flag=="false":
-    # print("reching here")
-    # pass
     for item in range(0, len(path_list)):
       if item==(len(path_list)-1):
         func_mkdir(path_list[item],"false")
@@ -247,9 +269,9 @@ def func_mkdir(sub_query, flag="false"):
   current_node=temp_node
   working_dir=temp_working
   
-  # if flag=="true":
-  #   mkdir_p(path_list)
-  #   pass
+  if flag=="true":
+    mkdir_p(path_list)
+    # pass
 
 
 def func_touch(sub_query):
@@ -336,6 +358,8 @@ def main():
       elif(a[0]=="tree"):
           root_node.print_tree()
 
+      else:
+        print(a[0]+": Command not found")
   pass
 
 

@@ -1,5 +1,12 @@
-from glob import glob
-from platform import node
+
+
+
+from importlib.resources import path
+from msilib.schema import Directory
+from os import mkdir
+from re import sub
+from sys import flags
+from tkinter import W
 
 
 dir_List = []
@@ -12,7 +19,15 @@ working_dir="/"
 term="root:"
 doll="$"
 
-dir_List = []
+
+
+
+
+
+
+
+
+
 
 class TreeNode:
     def __init__(self, data):
@@ -26,7 +41,6 @@ class TreeNode:
         while p:
             level += 1
             p = p.parent
-
         return level
 
     def add_child(self, child):
@@ -46,176 +60,228 @@ class TreeNode:
       if self.children:
         for child in self.children:
           child.dir_list()
-    
-    def child_list(self):
-      global child_List
-      for child in self.children:
-        child_List.append(child.data)
-      print(child_List)
 
     def nodes_list(self):
-      global nodes_List 
-      nodes_List= self.children
-      print(nodes_List)
+      global nodes_List
+      nodes_List = self.children
+      # nodes_List= copy.deepcopy(self.children)
 
-    def add_node(self, type, filename):
-      if(type=="mkdir"):
-        filename="/"+filename
-        file = TreeNode(filename)
-        self.add_child(file)
-      elif(type=="touch"):
-        file = TreeNode(filename)
-        print(file)
-        self.add_child(file)
-        self.print_tree()
-        
-
-    def mkdir_with_p(self,value):
-      print(value)
-      substring = value.split('/')
-      print(substring)
-      global current_node
-      global root_node
-      for item in substring:
-        if(item!=""):
-          new_node=TreeNode("/"+item)
-          current_node.add_child(new_node)
-          current_node=new_node
-      current_node=self
+    def node_data(self):
+      print(self.data)
 
 
-def cng_dir(index_num, direname):
+
+
+#FUNCTION TO ADD NODE
+def add_node(type, name):
   global current_node
-  global nodes_List
-  global working_dir
-  working_dir = working_dir + direname
-  current_node=nodes_List[index_num]
-  pass
-
-def initial_dir():
-  global nodes_List
-  global dir_List
-  global current_node
-  del dir_List[:]
-  del nodes_List[:]
-  print(current_node)
-  current_node.dir_list()
-  current_node.nodes_list()
-  current_node.child_list()
-  dir_List.pop(0)
-  print(dir_List)
+  if type=="mkdir":
+    name="/"+name
+    new_node= TreeNode(name)
+    # print(current_node)
+    current_node.add_child(new_node)
+  elif type=="touch":
+    new_node= TreeNode(name)
+    # print(current_node)
+    current_node.add_child(new_node)
 
 
-def func_cd(dir_name):
-  global dir_List
+
+
+def func_cd(dir_name,flag="cd: No such file or directory"):
+
   global child_List
   global nodes_List
+  global dir_List
   global root_node
   global current_node
-  global working_dir 
   global cd_count
+  global working_dir 
   global term 
   global doll
-  #creating lists
-  dir_List.clear()
-  nodes_List.clear()
-  # print(current_node)
+
+  del dir_List[:]
   current_node.dir_list()
   current_node.nodes_list()
-  print(dir_List)
   dir_List.pop(0)
 
-  # substring = dir_name.split('/')
-  directory_name = "/" + dir_name 
+  if len(dir_name)>=2 and dir_name[0]=="/":
+    dir_name=dir_name[1:]    
 
+
+  # print(dir_name)
+
+
+  directory = "/" + dir_name
+
+  path_list = dir_name.split('/')
+
+  while("" in path_list):
+    path_list.remove("")
+
+  print(cd_count)
 
   if dir_name==".":
     pass
-  
-  elif dir_name=="/":
-    term="root:"
-    working_dir="/"
-    cd_count=0
-    current_node=root_node
 
   elif dir_name=="..":
     # parent_dir(working_dir)
     pass
-
+    
   elif "./" in dir_name:
     pass
 
-  elif len(dir_name) >=2 and dir_name[0]=="/":
-    if dir_name in dir_List:
-      index_num = dir_List.index(dir_name)
-      if cd_count==0:
-        working_dir = working_dir + dir_name[1:]
-        cd_count=cd_count+1
-        current_node=nodes_List[index_num]
-      else:
-        working_dir = working_dir + dir_name[1:]
-        current_node=nodes_List[index_num]
-
-  elif directory_name in dir_List:
-    index_num = dir_List.index(directory_name)
-    if cd_count==0:
-      working_dir = working_dir + directory_name[1:]
-      cd_count=cd_count+1
-      current_node=nodes_List[index_num]
-    else:
-      working_dir = working_dir + directory_name
-      cd_count=cd_count+1
-      current_node=nodes_List[index_num]
-
+  elif dir_name=="/":
+    term="root:"
+    working_dir="/"
+    cd_count=0
+    current_node=root_node  
+    
   elif dir_name in dir_List:
     print("cd: Destination is a file")
 
-  else:
-    print("cd: No such file or directory")
 
-  # else:
-  #   for item in range(0, len(substring)):
+  elif len(path_list)>1:
+    for item in path_list:
+      func_cd(item)
       
-      
-  #     if substring[item] != "":
-  #       initial_dir()
-  #       print(dir_List)
-  #       direname= "/"+ substring[item]
-  #       print(substring[item])
-  #       if substring[item] in dir_List:
-  #         print("cd: Destination is a file")
 
-  #       elif direname in dir_List:
-  #         print("found")
-  #         index_num = child_List.index(direname)
-  #         print(index_num)
-
-  #         if cd_count==0:
-  #           cng_dir(index_num, direname[1:])
-
-  #         else:
-  #           cng_dir(index_num, direname)
-
-  #       else:
-  #         print("cd: No such file or directory")
-
-
-
-def func_mkdir(name,dir_name):
-  pass
+  elif directory in dir_List:
+    index_num = dir_List.index(directory)
+    if cd_count==0:
+      working_dir = working_dir + directory[1:]
+      cd_count=cd_count+1
+      current_node=nodes_List[index_num]
+    else:
+      working_dir = working_dir + directory
+      current_node=nodes_List[index_num]
 
   
+  else:
+    print(flag)
+
+def mkdir_p(path_list):
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+
+
+  temp_node = current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+  if len(path_list)==1:
+    name="/"+path_list[0]
+    if name in dir_List:
+      pass
+    else:
+      add_node("mkdir",path_list[0])
+
+  if len(path_list)>1:
+    for item in range(0, len(path_list)):
+
+      del dir_List[:]
+      current_node.dir_list()
+      current_node.nodes_list()
+      dir_List.pop(0)
+
+      name=path_list[item]
+      directory="/"+path_list[item]
+
+      if item==(len(path_list)-1):
+        print(directory)
+        if directory in dir_List:
+          func_cd(directory[1:])
+        else:
+          func_mkdir(directory[1:],"false")
+      
+      else:
+
+        if directory in dir_List:
+          func_cd(directory[1:])
+        else:
+          func_mkdir(directory[1:],"false")
+          func_cd(directory[1:])
+        
+
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count
 
 
 
+def func_mkdir(sub_query, flag="false"):
+
+  #flag =false if -p is not their
+  #flag =true if -p is their
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+
+  temp_node=current_node
+  temp_working=working_dir
+
+  path_list=sub_query.split('/')
+  
+  while("" in path_list):
+    path_list.remove("")
+  
+  if flag=="false":
+    dir_name = "/" + sub_query
+
+  elif len(path_list)==1 and flag=="false":
+    dir_name = "/" + path_list[0]
+    sub_query=path_list[0]
+
+  if len(path_list)==1 and flag=="false":
+    if dir_name in dir_List:
+      print("mkdir: File exists")
+    elif sub_query in dir_List:
+      print("mkdir: File exists")
+    else:
+      add_node("mkdir",sub_query)
 
 
+  if len(path_list)>1 and flag=="false":
+    for item in range(0, len(path_list)):
+      if item==(len(path_list)-1):
+        func_mkdir(path_list[item],"false")
+      else:
+        func_cd(path_list[item], "mkdir: Ancestor directory does not exist")
+        if(temp_node==current_node):
+          break
+  current_node=temp_node
+  working_dir=temp_working
+  
+  if flag=="true":
+    mkdir_p(path_list)
+    # pass
+
+
+def func_touch(sub_query):
+  add_node("touch",sub_query)
 
 
 
 
 def main():
-  #global variables
+  # global variables
   global child_List
   global nodes_List
   global dir_List
@@ -225,6 +291,7 @@ def main():
   global working_dir 
   global term 
   global doll
+  # print(working_dir)
 
 
   #Creating first node of root
@@ -244,11 +311,10 @@ def main():
     if(len(query) != 0):
 
       a = query.split(" ")
-
+      a[0] = str(a[0]).strip()
       if(a[0]== "exit"):
         a=False
         print("bye, root")
-        root.print_tree()
 
       elif(a[0] == "pwd"):
         print(working_dir)
@@ -257,7 +323,7 @@ def main():
 
       elif(a[0]=="cd"):
         try:
-          sub_query =str(a[1]).strip()
+          sub_query = str(a[1]).strip()
           # print(sub_query)
           func_cd(sub_query)
         except:
@@ -266,24 +332,34 @@ def main():
 
       elif(a[0]=="mkdir"):
         try:
-          name = str(a[0]).strip()
-          sub_query =str(a[1]).strip()
-          func_mkdir(name)
+          sub_query=str(a[1]).strip()
+          if sub_query=="-p":
+            try: 
+              sub_query=str(a[2]).strip()
+              func_mkdir(sub_query,"true")
+            except:
+              pass
+          else:
+            func_mkdir(sub_query,"false")
         except:
           print("mkdir: Invalid syntax") 
-          pass
 
       elif(a[0]=="touch"):
-        print("touch")
         try:
           file_name = str(a[1]).strip()
-          current_node.add_node("touch", file_name)
-          print(current_node)
-          initial_dir()
-
+          if file_name=="":
+            pass
+          else:
+            func_touch(file_name)
         except:
-          print("cd: Invalid syntax") 
+          pass
 
+
+      elif(a[0]=="tree"):
+          root_node.print_tree()
+
+      else:
+        print(a[0]+": Command not found")
   pass
 
 
