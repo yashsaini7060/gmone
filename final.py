@@ -462,7 +462,7 @@ def fun_cp(file_path, dest_path):
         else:
           dest_path_exists="true"
       else:
-        func_cd(dest_path[item],"cp: No such file or directory")
+        func_cd(dest_path[item],"cp: No such file or directory", "true")
       if(temp_node==current_node or anc_dir==0):
         anc_dir=1
         break 
@@ -483,7 +483,6 @@ def fun_cp(file_path, dest_path):
         else:
           print("cp: No such file")
       else:
-        print(file_path[item])
         func_cd(file_path[item],"cp: No such file or directory")
 
       if(temp_node==current_node or anc_dir==0):
