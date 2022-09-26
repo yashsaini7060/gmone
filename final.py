@@ -4,6 +4,7 @@
 dir_List = []
 child_List = []
 nodes_List = []
+child_node_List =[]
 current_node = 0
 root_node = 0
 cd_count=0
@@ -53,7 +54,12 @@ class TreeNode:
       global child_List
       for child in self.children:
         child_List.append(child.data)
-
+    
+    def child_node_list(self):
+      global child_node_List
+      for child in self.children:
+        child_node_List.append(child.data)
+    
     def dir_list(self):
       dir_List.append(self.data)
       if self.children:
@@ -63,13 +69,25 @@ class TreeNode:
     def nodes_list(self):
       global nodes_List
       nodes_List = self.children
-      # nodes_List= copy.deepcopy(self.children)
 
     def node_data(self):
       print(self.data)
 
+    def childCount(self):
+      length= len(self.children)
+      print(length)
+      return length
 
+    def removeChild(self,node_adr):
 
+       for child in self.children:
+        if node_adr==child:
+            print(self.children)
+            self.children.remove(child)
+            print(self.children)
+            break
+        else:
+          child.removeChild(node_adr)
 
 #FUNCTION TO ADD NODE
 def add_node(type, name):
@@ -81,9 +99,6 @@ def add_node(type, name):
   elif type=="touch":
     new_node= TreeNode(name)
     current_node.add_child(new_node)
-
-
-
 
 def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
 
@@ -172,9 +187,6 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     working_dir=temp_working
     cd_count=temp_cd_count
 
-
-
-
 def func_cd_multiple(query):
   global child_List
   global nodes_List
@@ -224,12 +236,11 @@ def func_cd_multiple(query):
       cd_count=temp_cd_count
     else:
       print("cd: No such file or directory")
+      current_node= temp_node
+      working_dir=temp_working
+      cd_count=temp_cd_count
+
     child_List.clear()
-
-  
-
-
-
 
 def mkdir_p(path_list):
   global child_List
@@ -282,8 +293,6 @@ def mkdir_p(path_list):
   current_node=temp_node
   working_dir=temp_working
   cd_count=temp_cd_count
-
-
 
 def func_mkdir(sub_query, flag="false"):
 
@@ -344,8 +353,6 @@ def func_mkdir(sub_query, flag="false"):
   if flag=="true":
     mkdir_p(path_list)
 
-
-
 def func_touch(sub_query):
 
   global child_List
@@ -397,9 +404,6 @@ def func_touch(sub_query):
   current_node=temp_node
   working_dir=temp_working
   cd_count=temp_cd_count
-
-
-
 
 def fun_cp(file_path, dest_path):
   
@@ -504,6 +508,120 @@ def fun_cp(file_path, dest_path):
   cd_count=temp_cd_count 
 
 
+
+def fun_mv(file_path, dest_path):
+  global child_List
+  global nodes_List
+  global dir_List
+  global child_node_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+  global anc_dir
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+  temp_node_it=temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+  temp_des=dest_path
+  file_path=file_path.split('/')
+  dest_path=dest_path.split('/')
+
+  while("" in file_path):
+    file_path.remove("")
+  
+  while("." in file_path):
+    file_path.remove(".")
+  
+  while(".." in file_path):
+    file_path.remove("..")
+
+  while("" in dest_path):
+    dest_path.remove("")
+  
+  while("." in dest_path):
+    dest_path.remove(".")
+  
+  while(".." in dest_path):
+    dest_path.remove("..")
+
+  file_path_exists="false"
+  dest_path_exists="false"
+
+  
+  if len(dest_path)>=1:
+    for item in range(0,len(dest_path)):
+      if item==(len(dest_path)-1):
+        for_dir="/"+dest_path[item]
+        if dest_path[item] in dir_List:
+          print("mv: File exists")
+        elif for_dir in dir_List:
+          print("mv: Destination is a directory")
+          break
+        else:
+          dest_path_exists="true"
+      else:
+        func_cd(dest_path[item],"mv: No such file or directory", "true")
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count   
+
+  
+  if len(file_path)>=1 and dest_path_exists=="true":
+    for item in range(0,len(file_path)):
+      if item==(len(file_path)-1):
+        for_dir="/"+file_path[item]
+        if file_path[item] in dir_List:
+          # print("current node data")
+          # print(current_node.data)
+          current_node.child_node_list()
+          # print("printing child nodes list")
+          # print(child_node_List)
+          index_num = child_node_List.index(file_path[item])
+          # print(index_num)
+          # print("printing child nodes name list")
+          current_node.nodes_list()
+          # print(nodes_List[index_num])
+          # print(nodes_List[index_num].data)
+          current_node.removeChild(nodes_List[index_num])
+          file_path_exists="true"
+        elif for_dir in dir_List:
+          print("mv: Source is a directory")
+        else:
+          print("mv: No such file")
+      else:
+        func_cd(file_path[item],"mv: No such file or directory")
+
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count 
+
+
+
+
+  if file_path_exists=="true" and dest_path_exists=="true":
+    func_touch(temp_des)  
+  
+  current_node=temp_node
+  working_dir=temp_working
+  cd_count=temp_cd_count
+
+
   
 
 
@@ -604,6 +722,16 @@ def main():
         except:
           pass
       
+
+      elif(a[0]=="mv"):
+        try:
+          file_path=str(a[1]).strip()
+          dest_path=str(a[2]).strip()
+          fun_mv(file_path, dest_path)
+        except:
+          pass
+
+
       elif(a[0]=="child"):
         current_node.child_nodes()
 
