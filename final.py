@@ -622,7 +622,72 @@ def fun_mv(file_path, dest_path):
   cd_count=temp_cd_count
 
 
+def fun_rm(file_path):
+
+  global child_List
+  global nodes_List
+  global dir_List
+  global child_node_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+  global anc_dir
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+  temp_node_it=temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+  file_path=file_path.split('/')
+
+  while("" in file_path):
+    file_path.remove("")
   
+  while("." in file_path):
+    file_path.remove(".")
+  
+  while(".." in file_path):
+    file_path.remove("..")
+
+  if len(file_path)>=1:
+    for item in range(0,len(file_path)):
+      if item==(len(file_path)-1):
+        for_dir="/"+file_path[item]
+        if file_path[item] in dir_List:
+          # print("current node data")
+          # print(current_node.data)
+          current_node.child_node_list()
+          # print("printing child nodes list")
+          # print(child_node_List)
+          index_num = child_node_List.index(file_path[item])
+          # print(index_num)
+          # print("printing child nodes name list")
+          current_node.nodes_list()
+          # print(nodes_List[index_num])
+          # print(nodes_List[index_num].data)
+          current_node.removeChild(nodes_List[index_num])
+          file_path_exists="true"
+        elif for_dir in dir_List:
+          print("rm: Is a directory")
+        else:
+          print("rm: No such file")
+      else:
+        func_cd(file_path[item],"rm: No such file")
+
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count
+  pass
 
 
 def main():
@@ -731,6 +796,12 @@ def main():
         except:
           pass
 
+      elif(a[0]=="rm"):
+        try:
+          file_path=str(a[1]).strip()
+          fun_rm(file_path)
+        except:
+          pass    
 
       elif(a[0]=="child"):
         current_node.child_nodes()
