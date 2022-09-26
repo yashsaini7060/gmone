@@ -49,6 +49,11 @@ class TreeNode:
             for child in self.children:
                 child.print_tree()
 
+    def child_nodes(self):
+      global child_List
+      for child in self.children:
+        child_List.append(child.data)
+
     def dir_list(self):
       dir_List.append(self.data)
       if self.children:
@@ -72,21 +77,18 @@ def add_node(type, name):
   if type=="mkdir":
     name="/"+name
     new_node= TreeNode(name)
-    # print(current_node)
     current_node.add_child(new_node)
   elif type=="touch":
     new_node= TreeNode(name)
-    # print(current_node)
     current_node.add_child(new_node)
 
 
 
 
 def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
-  # print(dir_name)
+
   # extr=false means no other function is not calling it
   # if true other function calls it
-  # print(extr)
   global child_List
   global nodes_List
   global dir_List
@@ -107,12 +109,11 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   current_node.nodes_list()
   dir_List.pop(0)
 
-  print(dir_name)
+
   if len(dir_name)>=2 and dir_name[0]=="/":
     dir_name=dir_name[1:]    
 
 
-  print(dir_name)
 
 
   directory = "/" + dir_name
@@ -152,7 +153,6 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   
 
   elif directory in dir_List:
-    print("here"+directory)
     index_num = dir_List.index(directory)
     if cd_count==0:
       working_dir = working_dir + directory[1:]
@@ -172,6 +172,61 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     working_dir=temp_working
     cd_count=temp_cd_count
 
+
+
+
+def func_cd_multiple(query):
+  global child_List
+  global nodes_List
+  global dir_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+
+  temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+
+
+  query=query.split("/")
+  while("" in query):
+    query.remove("")
+    
+
+  for item in query:
+    current_node.child_nodes()
+    current_node.nodes_list()
+
+    directory="/"+item
+    if item==".":
+      pass
+
+    elif item=="..":
+      pass
+
+    elif directory in child_List:
+      index_num = child_List.index(directory)
+      if cd_count==0:
+        working_dir = working_dir + directory[1:]
+        cd_count=cd_count+1
+        current_node=nodes_List[index_num]
+      else:
+        working_dir = working_dir + directory
+        current_node=nodes_List[index_num]
+    elif item in child_List:
+      print("cd: Destination is a file")
+      current_node=temp_node
+      working_dir=temp_working
+      cd_count=temp_cd_count
+    else:
+      print("cd: No such file or directory")
+    child_List.clear()
+
+  
 
 
 
@@ -210,7 +265,6 @@ def mkdir_p(path_list):
       directory="/"+path_list[item]
 
       if item==(len(path_list)-1):
-        # print(directory)
         if directory in dir_List:
           func_cd(directory[1:])
         else:
@@ -335,7 +389,6 @@ def func_touch(sub_query):
           func_touch(path_list[item])
       else:
         name="/"+path_list[item]
-        # print(dir_List)
         func_cd(name, "touch: Ancestor directory does not exist","true")
       
       if(temp_node==current_node or anc_dir==0):
@@ -346,8 +399,6 @@ def func_touch(sub_query):
   cd_count=temp_cd_count
 
 
-def chk_exists():
-  pass
 
 
 def fun_cp(file_path, dest_path):
@@ -363,24 +414,65 @@ def fun_cp(file_path, dest_path):
   global doll
   global anc_dir
 
-  temp_node=current_node
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+  temp_node_it=temp_node=current_node
   temp_working=working_dir
   temp_cd_count=cd_count
 
+  temp_des=dest_path
   file_path=file_path.split('/')
-  # dest_path=dest_path.split('/')
+  dest_path=dest_path.split('/')
 
   while("" in file_path):
     file_path.remove("")
-
-  # while("" in dest_path):
-  #   dest_path.remove("")
   
-  # print(file_path)
-  # print(dest_path)
-  file_path_exists="false"
+  while("." in file_path):
+    file_path.remove(".")
+  
+  while(".." in file_path):
+    file_path.remove("..")
 
-  if len(file_path)>1:
+  
+
+  while("" in dest_path):
+    dest_path.remove("")
+  
+  while("." in dest_path):
+    dest_path.remove(".")
+  
+  while(".." in dest_path):
+    dest_path.remove("..")
+
+  file_path_exists="false"
+  dest_path_exists="false"
+
+  
+  if len(dest_path)>=1:
+    for item in range(0,len(dest_path)):
+      if item==(len(dest_path)-1):
+        for_dir="/"+dest_path[item]
+        if dest_path[item] in dir_List:
+          print("cp: File exists")
+        elif for_dir in dir_List:
+          print("cp: Destination is a directory")
+          break
+        else:
+          dest_path_exists="true"
+      else:
+        func_cd(dest_path[item],"cp: No such file or directory")
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count   
+
+  
+  if len(file_path)>=1 and dest_path_exists=="true":
     for item in range(0,len(file_path)):
       if item==(len(file_path)-1):
         for_dir="/"+file_path[item]
@@ -391,19 +483,22 @@ def fun_cp(file_path, dest_path):
         else:
           print("cp: No such file")
       else:
+        print(file_path[item])
         func_cd(file_path[item],"cp: No such file or directory")
 
       if(temp_node==current_node or anc_dir==0):
         anc_dir=1
         break 
   
-  current_node=temp_node
-  working_dir=temp_working
-  cd_count=temp_cd_count  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count 
 
-  print(file_path_exists)
-  if file_path_exists=="true" :
-    func_touch(dest_path)  
+
+
+
+  if file_path_exists=="true" and dest_path_exists=="true":
+    func_touch(temp_des)  
   
   current_node=temp_node
   working_dir=temp_working
@@ -411,7 +506,6 @@ def fun_cp(file_path, dest_path):
 
 
   
-
 
 
 def main():
@@ -425,7 +519,6 @@ def main():
   global working_dir 
   global term 
   global doll
-  # print(working_dir)
 
 
   #Creating first node of root
@@ -453,7 +546,6 @@ def main():
       elif(a[0] == "pwd"):
         try:
           sub_query = str(a[1]).strip()
-          # print(sub_query)
           print("pwd: Invalid syntax")
         except:
           print(working_dir)
@@ -464,8 +556,19 @@ def main():
       elif(a[0]=="cd"):
         try:
           sub_query = str(a[1]).strip()
-          # print(sub_query)
-          func_cd(sub_query)
+
+          query=sub_query.split("/")
+
+          while("" in query):
+            query.remove("")
+
+          if len(query)<=1:
+            func_cd(sub_query)
+          else:
+            func_cd_multiple(sub_query)
+
+
+
         except:
           print("cd: Invalid syntax") 
 
@@ -501,6 +604,9 @@ def main():
           fun_cp(file_path, dest_path)
         except:
           pass
+      
+      elif(a[0]=="child"):
+        current_node.child_nodes()
 
 
       elif(a[0]=="tree"):
