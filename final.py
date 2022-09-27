@@ -4,12 +4,13 @@
 dir_List = []
 child_List = []
 nodes_List = []
-child_node_List =[]
+child_node_List = []
+user_List= ["root"]
 current_node = 0
 root_node = 0
 cd_count=0
 working_dir="/"
-term="root:"
+username="root"
 doll="$"
 anc_dir=1
 des_file=1
@@ -27,6 +28,7 @@ des_file=1
 class TreeNode:
     def __init__(self, data):
         self.data = data
+        self.perms=""
         self.children = []
         self.parent = None
 
@@ -85,9 +87,9 @@ class TreeNode:
 
        for child in self.children:
         if node_adr==child:
-            print(self.children)
+            # print(self.children)
             self.children.remove(child)
-            print(self.children)
+            # print(self.children)
             break
         else:
           child.removeChild(node_adr)
@@ -114,7 +116,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
   global des_file
@@ -154,7 +156,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     pass
 
   elif dir_name=="/":
-    term="root:"
+    username="root"
     working_dir="/"
     cd_count=0
     current_node=root_node  
@@ -198,7 +200,7 @@ def func_cd_multiple(query):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
 
   temp_node=current_node
@@ -253,7 +255,7 @@ def mkdir_p(path_list):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
 
 
@@ -308,7 +310,7 @@ def func_mkdir(sub_query, flag="false"):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
 
   del dir_List[:]
@@ -365,7 +367,7 @@ def func_touch(sub_query):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
 
@@ -417,7 +419,7 @@ def fun_cp(file_path, dest_path):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
 
@@ -521,7 +523,7 @@ def fun_mv(file_path, dest_path):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
 
@@ -635,7 +637,7 @@ def fun_rm(file_path):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
 
@@ -702,7 +704,7 @@ def fun_rmdir(file_path):
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
   global anc_dir
 
@@ -740,15 +742,15 @@ def fun_rmdir(file_path):
         if file_path[item] in dir_List:
           print("rmdir: Not a directory")
         elif for_dir in dir_List:
-          print(current_node.data)
-          print("rm: Is a directory")
+          # print(current_node.data)
+          # print("rmdir: Is a directory")
           current_node.child_node_list()
           # print("child")
           # print(child_node_List)
           current_node.nodes_list()
           # print(nodes_List)
-          for item in nodes_List:
-            print(item.data)
+          # for item in nodes_List:
+          #   print(item.data)
           index_num = child_node_List.index(for_dir)
           # print("index")
           # print(index_num)
@@ -788,11 +790,12 @@ def main():
   global child_List
   global nodes_List
   global dir_List
+  global user_List
   global root_node
   global current_node
   global cd_count
   global working_dir 
-  global term 
+  global username 
   global doll
 
 
@@ -806,7 +809,7 @@ def main():
   while(a):
 
     #SAFE CODE BEGINS
-    print(term+working_dir+doll, end=" ")
+    print(username+":"+working_dir+doll, end=" ")
     query= input() 
 
     #if else ladder for queries
@@ -816,7 +819,7 @@ def main():
       a[0] = str(a[0]).strip()
       if(a[0]== "exit"):
         a=False
-        print("bye, root")
+        print("bye, "+username)
 
       elif(a[0] == "pwd"):
         try:
@@ -900,11 +903,56 @@ def main():
           file_path=str(a[1]).strip()
           fun_rmdir(file_path)
         except:
-          pass     
+          pass    
+
+      elif(a[0]=="adduser"):
+        try:
+          name=str(a[1]).strip()
+          if username=="root" and name!="":
+            if name in user_List:
+              print("adduser: The user already exists")
+            else:
+              user_List.append(name)
+        except:
+          pass 
+      
+      elif(a[0]=="deluser"):
+        try:
+          name=str(a[1]).strip()
+          if username=="root" and name!="":
+            if name=="root" and username=="root":
+              print("WARNING: You are just about to delete the root account\n"
+              "Usually this is never required as it may render the whole system unusable\n"
+              "If you really want this, call deluser with parameter --force\n"
+              "(but this `deluser` does not allow `--force`, haha)\n"
+              "Stopping now without having performed any action")
+            elif (name in user_List) and name!="root":
+              user_List.remove(name)
+            elif (name not in user_List)  and name!="root":
+              print("deluser: The user does not exist")
+        except:
+          pass 
+
+      elif(a[0]=="su"):
+        try:
+          name=str(a[1]).strip()
+          if username=="root" and name!="" and name!="root":
+            if name in user_List:
+              username=name
+            elif (name not in user_List) and name!="root":
+              print("su: Invalid user")
+          if username!="root" and name=="root":
+            username="root"
+        except:
+          username="root"
+          pass 
+
 
       elif(a[0]=="child"):
         current_node.child_nodes()
 
+      elif(a[0]=="users"):
+        print(user_List)
 
       elif(a[0]=="tree"):
           root_node.print_tree()
