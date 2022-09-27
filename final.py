@@ -57,6 +57,7 @@ class TreeNode:
     
     def child_node_list(self):
       global child_node_List
+      child_node_List.clear()
       for child in self.children:
         child_node_List.append(child.data)
     
@@ -67,7 +68,9 @@ class TreeNode:
           child.dir_list()
 
     def nodes_list(self):
+      
       global nodes_List
+      # nodes_List.clear()
       nodes_List = self.children
 
     def node_data(self):
@@ -689,6 +692,96 @@ def fun_rm(file_path):
     cd_count=temp_cd_count
   pass
 
+def fun_rmdir(file_path):
+  
+  global child_List
+  global nodes_List
+  global dir_List
+  global child_node_List
+  global root_node
+  global current_node
+  global cd_count
+  global working_dir 
+  global term 
+  global doll
+  global anc_dir
+
+  del dir_List[:]
+  current_node.dir_list()
+  current_node.nodes_list()
+  dir_List.pop(0)
+  temp_node_it=temp_node=current_node
+  temp_working=working_dir
+  temp_cd_count=cd_count
+
+  if file_path=="/":
+    print("rmdir: Cannot remove pwd")
+  elif file_path==".":
+    print("rmdir: Cannot remove pwd")
+  elif file_path=="..":
+    print("rmdir: Cannot remove pwd")
+
+  file_path=file_path.split('/')
+
+  while("" in file_path):
+    file_path.remove("")
+  
+  while("." in file_path):
+    file_path.remove(".")
+  
+  while(".." in file_path):
+    file_path.remove("..")
+
+  if len(file_path)>=1:
+    for item in range(0,len(file_path)):
+      if item==(len(file_path)-1):
+        for_dir="/"+file_path[item]
+        # print(dir_List)
+        if file_path[item] in dir_List:
+          print("rmdir: Not a directory")
+        elif for_dir in dir_List:
+          print(current_node.data)
+          print("rm: Is a directory")
+          current_node.child_node_list()
+          # print("child")
+          # print(child_node_List)
+          current_node.nodes_list()
+          # print(nodes_List)
+          for item in nodes_List:
+            print(item.data)
+          index_num = child_node_List.index(for_dir)
+          # print("index")
+          # print(index_num)
+          # print(nodes_List[index_num].data)
+          child=nodes_List[index_num].children
+          # print("childrens")
+          # print(child)
+          # for items in child:
+          #   print(items.data)
+          # print(len(child))
+          if len(child)>0:
+            print("rmdir: Directory not empty")
+          else:
+            current_node.removeChild(nodes_List[index_num])
+          # temp=nodes_List[index_num]
+          # print("new list")
+          # print(temp)
+          # temp.child_node_list()
+          # print(child_node_List)
+          # current_node.nodes_list()
+          # current_node.removeChild(nodes_List[index_num])
+        else:
+          print("rmdir: No such file or directory")
+      else:
+        func_cd(file_path[item],"rm: No such file")
+
+      if(temp_node==current_node or anc_dir==0):
+        anc_dir=1
+        break 
+  
+    current_node=temp_node
+    working_dir=temp_working
+    cd_count=temp_cd_count
 
 def main():
   # global variables
@@ -787,7 +880,6 @@ def main():
         except:
           pass
       
-
       elif(a[0]=="mv"):
         try:
           file_path=str(a[1]).strip()
@@ -801,7 +893,14 @@ def main():
           file_path=str(a[1]).strip()
           fun_rm(file_path)
         except:
-          pass    
+          pass
+
+      elif(a[0]=="rmdir"):
+        try:
+          file_path=str(a[1]).strip()
+          fun_rmdir(file_path)
+        except:
+          pass     
 
       elif(a[0]=="child"):
         current_node.child_nodes()
