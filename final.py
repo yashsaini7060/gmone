@@ -142,7 +142,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
   current_node.nodes_list()
   dir_List.pop(0)
 
-
+  anc_dir=1
   if len(dir_name)>=2 and dir_name[0]=="/":
     dir_name=dir_name[1:]    
 
@@ -221,11 +221,12 @@ def func_cd_multiple(query):
   global working_dir 
   global username 
   global doll
-
+  global anc_dir
   temp_node=current_node
   temp_working=working_dir
   temp_cd_count=cd_count
 
+  anc_dir=1
 
 
   query=query.split("/")
@@ -234,46 +235,48 @@ def func_cd_multiple(query):
     
 
   for item in query:
-    current_node.child_nodes()
-    current_node.nodes_list()
+    if anc_dir==1:
+      current_node.child_nodes()
+      current_node.nodes_list()
 
-    directory="/"+item
-    if item==".":
-      pass
-
-    elif item=="..":
-      try:
-        # root_node.get_parent(current_node.data)
-        # current_node=parent_node
-        # if(current_node.data=="root/"):
-        #   working_dir="/"
-        pass
-      except:
+      directory="/"+item
+      if item==".":
         pass
 
+      elif item=="..":
+        try:
+          # root_node.get_parent(current_node.data)
+          # current_node=parent_node
+          # if(current_node.data=="root/"):
+          #   working_dir="/"
+          pass
+        except:
+          pass
 
-    elif directory in child_List:
-      index_num = child_List.index(directory)
-      if cd_count==0:
-        working_dir = working_dir + directory[1:]
-        cd_count=cd_count+1
-        current_node=nodes_List[index_num]
+
+      elif directory in child_List:
+        index_num = child_List.index(directory)
+        if cd_count==0:
+          working_dir = working_dir + directory[1:]
+          cd_count=cd_count+1
+          current_node=nodes_List[index_num]
+        else:
+          working_dir = working_dir + directory
+          cd_count=cd_count+1
+          current_node=nodes_List[index_num]
+      elif item in child_List:
+        print("cd: Destination is a file")
+        current_node=temp_node
+        working_dir=temp_working
+        cd_count=temp_cd_count
       else:
-        working_dir = working_dir + directory
-        cd_count=cd_count+1
-        current_node=nodes_List[index_num]
-    elif item in child_List:
-      print("cd: Destination is a file")
-      current_node=temp_node
-      working_dir=temp_working
-      cd_count=temp_cd_count
-    else:
-      print("cd: No such file or directory")
-      current_node= temp_node
-      working_dir=temp_working
-      cd_count=temp_cd_count
+        print("cd: No such file or directory")
+        anc_dir=0
+        current_node= temp_node
+        working_dir=temp_working
+        cd_count=temp_cd_count
 
-    child_List.clear()
+      child_List.clear()
 
 def mkdir_p(path_list):
   global child_List
@@ -904,7 +907,10 @@ def main():
             if len(query)<=1:
               func_cd(sub_query)
             else:
-              func_cd_multiple(sub_query)
+              try:
+                func_cd_multiple(sub_query)
+              except:
+                pass
           else:
             print("cd: Invalid syntax") 
         except:
