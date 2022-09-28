@@ -162,8 +162,13 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     pass
 
   elif dir_name=="..":
-    # parent_dir(working_dir)
-    pass
+    try:
+      root_node.get_parent(current_node.data)
+      current_node=parent_node
+      if(current_node.data=="root/"):
+        working_dir="/"
+    except:
+      pass
     
   elif "./" in dir_name:
     pass
@@ -204,6 +209,7 @@ def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
     current_node=temp_node
     working_dir=temp_working
     cd_count=temp_cd_count
+    des_file=1
 
 def func_cd_multiple(query):
   global child_List
@@ -236,7 +242,15 @@ def func_cd_multiple(query):
       pass
 
     elif item=="..":
-      pass
+      try:
+        # root_node.get_parent(current_node.data)
+        # current_node=parent_node
+        # if(current_node.data=="root/"):
+        #   working_dir="/"
+        pass
+      except:
+        pass
+
 
     elif directory in child_List:
       index_num = child_List.index(directory)
