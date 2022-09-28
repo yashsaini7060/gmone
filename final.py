@@ -6,6 +6,7 @@ child_List = []
 nodes_List = []
 child_node_List = []
 user_List= ["root"]
+parent_node=0
 current_node = 0
 root_node = 0
 cd_count=0
@@ -28,7 +29,7 @@ des_file=1
 class TreeNode:
     def __init__(self, data):
         self.data = data
-        self.perms=""
+        self.perms="-rw-r--"
         self.children = []
         self.parent = None
 
@@ -93,6 +94,17 @@ class TreeNode:
             break
         else:
           child.removeChild(node_adr)
+    
+    def get_parent(self,node_name):
+      global parent_node
+      if self.children:
+        for child in self.children:
+          if child.data== node_name:
+            parent_node=self
+      else:
+        for child in self.children:
+          child.dir_list()
+      pass
 
 #FUNCTION TO ADD NODE
 def add_node(type, name):
@@ -104,6 +116,7 @@ def add_node(type, name):
   elif type=="touch":
     new_node= TreeNode(name)
     current_node.add_child(new_node)
+
 
 def func_cd(dir_name,str="cd: No such file or directory",extr="false"):
 
@@ -717,11 +730,39 @@ def fun_rmdir(file_path):
   temp_cd_count=cd_count
 
   if file_path=="/":
-    print("rmdir: Cannot remove pwd")
+    if working_dir!="/":  
+      root_node.get_parent(working_dir)
+      # print(parent_node)
+      # print(parent_node.data)
+      length=parent_node.children
+      length_arr=len(length)
+      # print(length_arr)
+      if length_arr>0:
+        print("rmdir: Directory not empty")
+      else:
+        print("rmdir: Cannot remove pwd")
+    else:
+      print("rmdir: Cannot remove pwd")
+
+
   elif file_path==".":
     print("rmdir: Cannot remove pwd")
+
   elif file_path=="..":
-    print("rmdir: Cannot remove pwd")
+
+    if working_dir!="/":  
+      root_node.get_parent(working_dir)
+      # print(parent_node)
+      # print(parent_node.data)
+      length=parent_node.children
+      length_arr=len(length)
+      # print(length_arr)
+      if length_arr>0:
+        print("rmdir: Directory not empty")
+      else:
+        print("rmdir: Cannot remove pwd")
+    else:
+      print("rmdir: Cannot remove pwd")
 
   file_path=file_path.split('/')
 
