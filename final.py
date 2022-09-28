@@ -774,8 +774,11 @@ def fun_rmdir(file_path):
   
   while(".." in file_path):
     file_path.remove("..")
-
-  if len(file_path)>=1:
+  if len(file_path)==1:
+    fp="/"+file_path[0]
+    if working_dir==fp:
+      print("rmdir: Cannot remove pwd")
+  elif len(file_path)>=1:
     for item in range(0,len(file_path)):
       if item==(len(file_path)-1):
         for_dir="/"+file_path[item]
