@@ -246,6 +246,7 @@ def func_cd_multiple(query):
         current_node=nodes_List[index_num]
       else:
         working_dir = working_dir + directory
+        cd_count=cd_count+1
         current_node=nodes_List[index_num]
     elif item in child_List:
       print("cd: Destination is a file")
@@ -778,7 +779,9 @@ def fun_rmdir(file_path):
     fp="/"+file_path[0]
     if working_dir==fp:
       print("rmdir: Cannot remove pwd")
-  elif len(file_path)>=1:
+      return
+
+  if len(file_path)>=1:
     for item in range(0,len(file_path)):
       if item==(len(file_path)-1):
         for_dir="/"+file_path[item]
@@ -878,19 +881,18 @@ def main():
       elif(a[0]=="cd"):
         try:
           sub_query = str(a[1]).strip()
+          if a[1]!="cd":
+            query=sub_query.split("/")
 
-          query=sub_query.split("/")
+            while("" in query):
+              query.remove("")
 
-          while("" in query):
-            query.remove("")
-
-          if len(query)<=1:
-            func_cd(sub_query)
+            if len(query)<=1:
+              func_cd(sub_query)
+            else:
+              func_cd_multiple(sub_query)
           else:
-            func_cd_multiple(sub_query)
-
-
-
+            print("cd: Invalid syntax") 
         except:
           print("cd: Invalid syntax") 
 
@@ -898,14 +900,18 @@ def main():
       elif(a[0]=="mkdir"):
         try:
           sub_query=str(a[1]).strip()
-          if sub_query=="-p":
-            try: 
-              sub_query=str(a[2]).strip()
-              func_mkdir(sub_query,"true")
-            except:
-              pass
+          if a[1]!="mkdir":
+            if sub_query=="-p":
+              try: 
+                sub_query=str(a[2]).strip()
+                func_mkdir(sub_query,"true")
+              except:
+                print("mkdir: Invalid syntax") 
+                pass
+            else:
+              func_mkdir(sub_query,"false")
           else:
-            func_mkdir(sub_query,"false")
+            print("mkdir: Invalid syntax") 
         except:
           print("mkdir: Invalid syntax") 
 
@@ -917,6 +923,7 @@ def main():
           else:
             func_touch(file_name)
         except:
+          print("touch: Invalid syntax")
           pass
 
       elif(a[0]=="cp"):
@@ -925,6 +932,7 @@ def main():
           dest_path=str(a[2]).strip()
           fun_cp(file_path, dest_path)
         except:
+          print("cp: Invalid syntax")
           pass
       
       elif(a[0]=="mv"):
@@ -933,6 +941,7 @@ def main():
           dest_path=str(a[2]).strip()
           fun_mv(file_path, dest_path)
         except:
+          print("mv: Invalid syntax")
           pass
 
       elif(a[0]=="rm"):
@@ -940,6 +949,7 @@ def main():
           file_path=str(a[1]).strip()
           fun_rm(file_path)
         except:
+          print("rm: Invalid syntax")
           pass
 
       elif(a[0]=="rmdir"):
@@ -947,6 +957,7 @@ def main():
           file_path=str(a[1]).strip()
           fun_rmdir(file_path)
         except:
+          print("rmdir: Invalid syntax")
           pass    
 
       elif(a[0]=="adduser"):
